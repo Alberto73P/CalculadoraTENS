@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Calculadora de dosificación basada en el archivo Excel proporcionado.">
+  <title>Dosificación TENS e Interferenciales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div>
+        <span class="eyebrow">Herramienta de apoyo</span>
+        <h1>Dosificación TENS e interferenciales</h1>
+        <p>Calculadora basada fielmente en las reglas del archivo Excel proporcionado.</p>
+      </div>
+      <div class="brand-mark" aria-hidden="true">TENS</div>
+    </div>
+  </header>
+
+  <main class="container main-content">
+    <section class="intro-card">
+      <div>
+        <span class="section-kicker">Antes de comenzar</span>
+        <h2>Introduce los datos</h2>
+        <p>
+          Completa los cuatro campos. Los resultados se calculan automáticamente
+          en el navegador a partir del IMC y de las mismas condiciones utilizadas
+          en el Excel original.
+        </p>
+      </div>
+      <div class="formula-chip">IMC = peso / estatura²</div>
+    </section>
+
+    <section class="calculator-grid">
+      <div class="panel form-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">01 · Datos</span>
+            <h2>Información del paciente</h2>
+          </div>
+        </div>
+
+        <form id="calculatorForm" novalidate>
+          <div class="form-grid">
+            <label class="field">
+              <span>Edad</span>
+              <span class="field-hint">Años</span>
+              <input id="age" name="age" type="number" min="0" max="120" step="1" placeholder="Ej. 22" required>
+              <small class="error" id="ageError"></small>
+            </label>
+
+            <label class="field">
+              <span>Sexo</span>
+              <span class="field-hint">M / F</span>
+              <select id="sex" name="sex" required>
+                <option value="">Seleccionar</option>
+                <option value="femenino">Femenino</option>
+                <option value="masculino">Masculino</option>
+              </select>
+              <small class="error" id="sexError"></small>
+            </label>
+
+            <label class="field">
+              <span>Peso</span>
+              <span class="field-hint">Kilogramos</span>
+              <input id="weight" name="weight" type="number" min="1" max="500" step="0.1" placeholder="Ej. 48" required>
+              <small class="error" id="weightError"></small>
+            </label>
+
+            <label class="field">
+              <span>Estatura</span>
+              <span class="field-hint">Metros</span>
+              <input id="height" name="height" type="number" min="0.5" max="2.5" step="0.01" placeholder="Ej. 1.50" required>
+              <small class="error" id="heightError"></small>
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Calcular dosificación</button>
+            <button class="btn btn-secondary" type="button" id="clearBtn">Limpiar</button>
+          </div>
+        </form>
+
+        <div class="note-box">
+          <strong>Importante:</strong>
+          <span>Edad y sexo se solicitan porque forman parte del formulario original. En las fórmulas actuales del Excel, los valores de dosificación dependen del IMC; edad y sexo no intervienen directamente en esas fórmulas.</span>
+        </div>
+      </div>
+
+      <aside class="panel summary-panel" id="summaryPanel">
+        <div class="panel-heading">
+          <div>
+            <span class="section-kicker">02 · Resultado</span>
+            <h2>Resumen</h2>
+          </div>
+          <span class="status-dot" id="statusDot"></span>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">+</div>
+          <h3>Aún no hay resultados</h3>
+          <p>Completa los datos y pulsa <strong>Calcular dosificación</strong>.</p>
+        </div>
+
+        <div class="summary-content hidden" id="summaryContent">
+          <div class="bmi-card">
+            <span>IMC</span>
+            <strong id="bmiValue">—</strong>
+            <span class="classification" id="classification">—</span>
+          </div>
+
+          <div class="summary-list">
+            <div><span>Frecuencia</span><strong id="summaryFrequency">—</strong></div>
+            <div><span>Intensidad</span><strong id="summaryIntensity">—</strong></div>
+            <div><span>Duración del pulso</span><strong id="summaryPulse">—</strong></div>
+            <div><span>Duración de sesión</span><strong id="summaryDuration">—</strong></div>
+            <div><span>Sesiones sugeridas</span><strong id="summarySessions">—</strong></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="results-section hidden" id="resultsSection">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">03 · Dosificación</span>
+          <h2>Resultados completos</h2>
+          <p>Valores obtenidos directamente de las reglas del Excel.</p>
+        </div>
+      </div>
+
+      <div class="results-grid">
+        <article class="result-card">
+          <span class="result-label">E1 · IMC</span>
+          <strong id="resultBmi">—</strong>
+          <small>kg/m²</small>
+        </article>
+        <article class="result-card">
+          <span class="result-label">Clasificación</span>
+          <strong id="resultClassification">—</strong>
+        </article>
+        <article class="result-card">
+          <span class="result-label">Frecuencia</span>
+          <strong id="resultFrequency">—</strong>
+          <small>Hz</small>
+        </article>
+        <article class="result-card">
+          <span class="result-label">Duración del pulso</span>
+          <strong id="resultPulse">—</strong>
+          <small>µs</small>
+        </article>
+        <article class="result-card">
+          <span class="result-label">Intensidad</span>
+          <strong id="resultIntensity">—</strong>
+          <small>mA</small>
+        </article>
+        <article class="result-card">
+          <span class="result-label">Duración de sesión</span>
+          <strong id="resultDuration">—</strong>
+          <small>minutos</small>
+        </article>
+        <article class="result-card">
+          <span class="result-label">Frecuencia de sesiones</span>
+          <strong id="resultSessions">—</strong>
+          <small>sesiones sugeridas</small>
+        </article>
+        <article class="result-card">
+          <span class="result-label">M1 · Resultado de intensidad</span>
+          <strong id="resultM1">—</strong>
+          <small>mA</small>
+        </article>
+      </div>
+
+      <div class="recommendation-card">
+        <div class="recommendation-icon">i</div>
+        <div>
+          <span class="result-label">Recomendación del Excel</span>
+          <p id="recommendation">—</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="electrodes-section">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">04 · Material visual</span>
+          <h2>Colocación y posición de electrodos</h2>
+          <p>Espacio preparado para incorporar posteriormente las imágenes proporcionadas por el responsable del proyecto.</p>
+        </div>
+      </div>
+
+      <div class="image-grid">
+        <figure class="image-placeholder">
+          <div class="placeholder-icon">IMG</div>
+          <figcaption>
+            <strong>Imagen 01</strong>
+            <span>Colocación de electrodos</span>
+          </figcaption>
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon">IMG</div>
+          <figcaption>
+            <strong>Imagen 02</strong>
+            <span>Posición / zona de aplicación</span>
+          </figcaption>
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon">IMG</div>
+          <figcaption>
+            <strong>Imagen 03</strong>
+            <span>Referencia adicional</span>
+          </figcaption>
+        </figure>
+      </div>
+
+      <div class="media-note">
+        Para agregar una imagen, sustituye el bloque visual de cada tarjeta por una etiqueta
+        <code>&lt;img&gt;</code> y coloca los archivos en la carpeta <code>assets/images/</code>.
+      </div>
+    </section>
+
+    <section class="instructions-section">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">05 · Instrucciones</span>
+          <h2>Uso de la herramienta</h2>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step"><span>1</span><p>Introduce la <strong>edad</strong> en años.</p></div>
+        <div class="step"><span>2</span><p>Selecciona el <strong>sexo</strong>.</p></div>
+        <div class="step"><span>3</span><p>Introduce el <strong>peso</strong> en kilogramos.</p></div>
+        <div class="step"><span>4</span><p>Introduce la <strong>estatura</strong> en metros.</p></div>
+        <div class="step"><span>5</span><p>Presiona <strong>Calcular dosificación</strong> para obtener los resultados.</p></div>
+      </div>
+    </section>
+
+    <section class="source-note">
+      <strong>Nota sobre el cálculo</strong>
+      <p>
+        Esta aplicación reproduce las fórmulas existentes en el archivo Excel proporcionado,
+        sin modificar sus valores de frecuencia, duración, intensidad, sesiones o recomendaciones.
+        Debe validarse el contenido con el responsable clínico antes de utilizarse como herramienta
+        de apoyo en un entorno real.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <span>Dosificación TENS e interferenciales</span>
+      <span>Aplicación web estática · HTML + CSS + JavaScript</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
