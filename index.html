@@ -27,9 +27,7 @@
         <span class="section-kicker">Antes de comenzar</span>
         <h2>Introduce los datos</h2>
         <p>
-          Completa los cuatro campos. Los resultados se calculan automáticamente
-          en el navegador a partir del IMC y de las mismas condiciones utilizadas
-          en el Excel original.
+          Completa los datos del paciente, registra signos y síntomas y consulta las herramientas de orientación. Todo se procesa localmente en tu navegador y no se guarda al iniciar un nuevo registro.
         </p>
       </div>
       <div class="formula-chip">IMC = peso / estatura²</div>
@@ -79,9 +77,26 @@
             </label>
           </div>
 
+          <div class="form-grid patient-notes-grid">
+            <label class="field field-full">
+              <span>Signos observados</span>
+              <span class="field-hint">Ej. inflamación visible, enrojecimiento o limitación observable</span>
+              <textarea id="patientSigns" name="patientSigns" rows="3" placeholder="Anota los signos observados (opcional)"></textarea>
+            </label>
+            <label class="field field-full">
+              <span>Síntomas referidos</span>
+              <span class="field-hint">Ej. dolor, rigidez, hormigueo o debilidad</span>
+              <textarea id="patientSymptoms" name="patientSymptoms" rows="3" placeholder="Describe los síntomas que refiere la persona (opcional)"></textarea>
+            </label>
+            <label class="field field-full">
+              <span>Observaciones adicionales</span>
+              <textarea id="patientNotes" name="patientNotes" rows="2" placeholder="Contexto relevante (opcional)"></textarea>
+            </label>
+          </div>
+
           <div class="form-actions">
             <button class="btn btn-primary" type="submit">Calcular dosificación</button>
-            <button class="btn btn-secondary" type="button" id="clearBtn">Limpiar</button>
+            <button class="btn btn-secondary" type="button" id="clearBtn">Nuevo registro / Limpiar</button>
           </div>
         </form>
 
@@ -184,10 +199,72 @@
       </div>
     </section>
 
+    <section class="diagnosis-section" id="symptomGuideSection">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">04 · Orientación</span>
+          <h2>Orientación guiada por síntomas</h2>
+          <p>Selecciona una zona y responde las preguntas. El sistema compara coincidencias con un catálogo editable; no confirma enfermedades.</p>
+        </div>
+      </div>
+      <div class="panel diagnosis-panel">
+        <div class="form-grid">
+          <label class="field field-full" for="bodyZone">
+            <span>¿En qué zona se presentan las molestias?</span>
+            <select id="bodyZone">
+              <option value="">Seleccionar zona</option>
+              <option value="codo">Codo</option>
+              <option value="cuello">Cuello</option>
+              <option value="pulgar">Pulgar / muñeca</option>
+              <option value="espalda">Espalda baja</option>
+            </select>
+          </label>
+        </div>
+        <div id="guidedQuestions" class="guided-questions hidden" aria-live="polite"></div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="button" id="compareSymptomsBtn">Comparar síntomas</button>
+          <button class="btn btn-secondary" type="button" id="clearDiagnosisBtn">Limpiar orientación</button>
+        </div>
+        <div id="diagnosisResults" class="diagnosis-results hidden" aria-live="polite"></div>
+        <div class="note-box">
+          <strong>Importante:</strong>
+          <span>La coincidencia de síntomas no es un diagnóstico ni sustituye una valoración profesional. El catálogo inicial es demostrativo y debe ser revisado por personal clínico antes de usarlo en un contexto real.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="amf-section" id="amfSection">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">05 · Cálculo auxiliar</span>
+          <h2>Frecuencia de amplitud modulada (AMF)</h2>
+          <p>Calcula la diferencia absoluta entre dos frecuencias de corriente media.</p>
+        </div>
+      </div>
+      <div class="panel amf-panel">
+        <div class="form-grid">
+          <label class="field" for="frequencyOne">
+            <span>Primera frecuencia (f₁)</span><span class="field-hint">Hz</span>
+            <input id="frequencyOne" type="number" min="0" step="any" placeholder="Ej. 4000">
+          </label>
+          <label class="field" for="frequencyTwo">
+            <span>Segunda frecuencia (f₂)</span><span class="field-hint">Hz</span>
+            <input id="frequencyTwo" type="number" min="0" step="any" placeholder="Ej. 4100">
+          </label>
+        </div>
+        <div class="form-actions">
+          <button class="btn btn-primary" type="button" id="calculateAmfBtn">Calcular AMF</button>
+          <button class="btn btn-secondary" type="button" id="clearAmfBtn">Limpiar</button>
+        </div>
+        <div id="amfResult" class="amf-result hidden" aria-live="polite"></div>
+        <p class="formula-explanation"><strong>Fórmula:</strong> AMF = |f₁ − f₂|. Ejemplo: |4100 − 4000| = 100 Hz.</p>
+      </div>
+    </section>
+
     <section class="electrodes-section">
       <div class="section-header">
         <div>
-          <span class="section-kicker">04 · Material visual</span>
+          <span class="section-kicker">06 · Material visual</span>
           <h2>Colocación y posición de electrodos</h2>
           <p>Espacio preparado para incorporar posteriormente las imágenes proporcionadas por el responsable del proyecto.</p>
         </div>
@@ -226,7 +303,7 @@
     <section class="instructions-section">
       <div class="section-header">
         <div>
-          <span class="section-kicker">05 · Instrucciones</span>
+          <span class="section-kicker">07 · Instrucciones</span>
           <h2>Uso de la herramienta</h2>
         </div>
       </div>
