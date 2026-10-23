@@ -1,19 +1,16 @@
 # Dosificación TENS e interferenciales
 
-Aplicación web estática construida con HTML, CSS y JavaScript puro.
+Aplicación web estática en HTML, CSS y JavaScript. Abre `index.html` en un navegador o publica los archivos en GitHub Pages.
 
-## Funciones
-- Calculadora de dosificación que conserva las reglas del Excel original.
-- Registro temporal de datos del paciente, signos, síntomas y observaciones.
-- Cuestionario guiado por zona corporal y comparación orientativa con un catálogo editable en `script.js` (`conditionCatalog`).
-- Cálculo de AMF: `|f1 - f2|`.
-- No guarda expedientes ni envía los datos a un servidor. El botón **Nuevo registro / Limpiar** elimina los datos y resultados de la sesión actual.
+## Funcionalidades
+- Formulario principal para información del paciente y cálculo basado en las reglas existentes del Excel.
+- Orientación guiada por síntomas con catálogo editable en `script.js` (`conditionCatalog`).
+- Formulario independiente de dosificación + AMF: vuelve a solicitar edad, sexo, peso, estatura, signos, síntomas y observaciones; calcula la misma dosificación que el formulario principal y la frecuencia de amplitud modulada con `AMF = |f1 - f2|`.
+- Los formularios son independientes. El botón de limpiar del formulario AMF borra sus campos y resultados; «Nuevo registro / Limpiar» también limpia el formulario principal y el formulario AMF.
+- Los datos se procesan localmente y no se guardan en una base de datos.
 
-## Añadir afecciones y síntomas
-En `script.js`, edita el arreglo `conditionCatalog`. Cada afección contiene `id`, `name`, `zone`, `description` y `symptoms`. Cada síntoma contiene un identificador único (`id`) y un texto (`label`). Las zonas existentes son `codo`, `cuello`, `pulgar` y `espalda`; puedes añadir nuevas zonas al selector HTML y nuevos elementos al catálogo.
+## Publicación
+Sube `index.html`, `styles.css`, `script.js`, `README.md` y la carpeta `assets/` al repositorio. En GitHub, habilita Pages desde la rama y carpeta correspondientes.
 
-## Publicar en GitHub Pages
-Sube `index.html`, `styles.css`, `script.js` y `assets/` al repositorio. No requiere compilación ni servidor.
-
-## Advertencia
-La orientación compara síntomas seleccionados con un catálogo demostrativo y no estima probabilidades clínicas. Debe revisarse por personal clínico antes de cualquier uso real. Los parámetros de dosificación reproducen el Excel proporcionado y también requieren validación clínica. No introduzcas datos personales identificables.
+## Nota importante
+Las reglas de dosificación reproducen los valores existentes en el Excel y no constituyen una recomendación clínica validada. El contenido debe ser revisado por personal clínico antes de usarlo en un contexto real.

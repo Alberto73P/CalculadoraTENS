@@ -132,28 +132,82 @@ function compareSymptoms() {
 document.getElementById("compareSymptomsBtn").addEventListener("click", compareSymptoms);
 document.getElementById("clearDiagnosisBtn").addEventListener("click", () => { bodyZone.value = ""; renderQuestions(); });
 
-/* Calculadora de frecuencia de amplitud modulada (AMF). */
-const frequencyOne = document.getElementById("frequencyOne"), frequencyTwo = document.getElementById("frequencyTwo");
-const amfResult = document.getElementById("amfResult");
-document.getElementById("calculateAmfBtn").addEventListener("click", () => {
-  const rawOne = frequencyOne.value, rawTwo = frequencyTwo.value;
-  if (rawOne === "" || rawTwo === "" || !Number.isFinite(Number(rawOne)) || !Number.isFinite(Number(rawTwo)) || Number(rawOne) < 0 || Number(rawTwo) < 0) {
-    amfResult.classList.remove("hidden"); amfResult.textContent = "Introduce dos frecuencias válidas, iguales o mayores que cero."; return;
-  }
-  const f1 = Number(rawOne), f2 = Number(rawTwo), amf = Math.abs(f1 - f2);
-  amfResult.replaceChildren(); amfResult.classList.remove("hidden");
-  const label = document.createElement("span"); label.textContent = `AMF = |${formatNumber(f1, 4)} − ${formatNumber(f2, 4)}|`;
-  const value = document.createElement("strong"); value.textContent = `${formatNumber(amf, 4)} Hz`;
-  amfResult.append(label, value);
-});
-document.getElementById("clearAmfBtn").addEventListener("click", () => { frequencyOne.value = ""; frequencyTwo.value = ""; amfResult.classList.add("hidden"); amfResult.replaceChildren(); });
-
 /* Nuevo registro: limpiar datos y resultados de esta sesión, sin persistencia. */
 clearBtn.addEventListener("click", () => {
   form.reset(); Object.keys(fields).forEach(name => setError(name));
   emptyState.classList.remove("hidden"); summaryContent.classList.add("hidden"); resultsSection.classList.add("hidden"); statusDot.classList.remove("active");
   bodyZone.value = ""; renderQuestions();
+  if (typeof amfForm !== "undefined") { amfForm.reset(); document.getElementById("amfResultsSection").classList.add("hidden"); Object.keys(amfFields).forEach(name => { const errorId = name === "frequencyOne" || name === "frequencyTwo" ? `${name}Error` : `amf${name[0].toUpperCase()}${name.slice(1)}Error`; const error = document.getElementById(errorId); if (error) error.textContent = ""; }); }
   document.getElementById("patientSigns").value = ""; document.getElementById("patientSymptoms").value = ""; document.getElementById("patientNotes").value = "";
-  frequencyOne.value = ""; frequencyTwo.value = ""; amfResult.classList.add("hidden"); amfResult.replaceChildren();
   window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* Formulario independiente: misma dosificación del Excel + cálculo AMF. */
+const amfForm = document.getElementById("amfCalculatorForm");
+const amfFields = {
+  age: document.getElementById("amfAge"),
+  sex: document.getElementById("amfSex"),
+  weight: document.getElementById("amfWeight"),
+  height: document.getElementById("amfHeight"),
+  frequencyOne: document.getElementById("frequencyOne"),
+  frequencyTwo: document.getElementById("frequencyTwo")
+};
+function validateAmfForm() {
+  let valid = true;
+  Object.keys(amfFields).forEach(name => {
+    const error = document.getElementById(`${name === "frequencyOne" || name === "frequencyTwo" ? name : "amf" + name[0].toUpperCase() + name.slice(1)}Error`);
+    if (error) error.textContent = "";
+  });
+  const rules = [
+    ["age", amfFields.age.value !== "" && Number(amfFields.age.value) >= 0 && Number(amfFields.age.value) <= 120, "Introduce una edad válida."],
+    ["sex", Boolean(amfFields.sex.value), "Selecciona una opción."],
+    ["weight", amfFields.weight.value !== "" && Number(amfFields.weight.value) > 0 && Number(amfFields.weight.value) <= 500, "Introduce un peso válido."],
+    ["height", amfFields.height.value !== "" && Number(amfFields.height.value) >= 0.5 && Number(amfFields.height.value) <= 2.5, "Introduce una estatura válida."],
+    ["frequencyOne", amfFields.frequencyOne.value !== "" && Number.isFinite(Number(amfFields.frequencyOne.value)) && Number(amfFields.frequencyOne.value) >= 0, "Introduce una frecuencia válida (0 o mayor)."],
+    ["frequencyTwo", amfFields.frequencyTwo.value !== "" && Number.isFinite(Number(amfFields.frequencyTwo.value)) && Number(amfFields.frequencyTwo.value) >= 0, "Introduce una frecuencia válida (0 o mayor)."]
+  ];
+  rules.forEach(([name, okay, message]) => {
+    if (!okay) {
+      valid = false;
+      const errorId = name === "frequencyOne" || name === "frequencyTwo" ? `${name}Error` : `amf${name[0].toUpperCase()}${name.slice(1)}Error`;
+      const error = document.getElementById(errorId);
+      if (error) error.textContent = message;
+    }
+  });
+  return valid;
+}
+amfForm.addEventListener("submit", event => {
+  event.preventDefault();
+  if (!validateAmfForm()) return;
+  const result = calculateFromExcelRules(Number(amfFields.weight.value), Number(amfFields.height.value));
+  const f1 = Number(amfFields.frequencyOne.value);
+  const f2 = Number(amfFields.frequencyTwo.value);
+  const amf = Math.abs(f1 - f2);
+  const values = {
+    amfResultBmi: formatNumber(result.bmi, 2),
+    amfResultClassification: result.classification,
+    amfResultFrequency: result.frequency,
+    amfResultPulse: result.pulseDuration,
+    amfResultIntensity: result.intensity,
+    amfResultDuration: result.sessionDuration,
+    amfResultSessions: result.sessions,
+    amfResultM1: result.m1,
+    amfFrequencyOneResult: `${formatNumber(f1, 4)} Hz`,
+    amfFrequencyTwoResult: `${formatNumber(f2, 4)} Hz`,
+    amfValueResult: `${formatNumber(amf, 4)} Hz`,
+    amfRecommendation: result.recommendation
+  };
+  Object.entries(values).forEach(([id, value]) => document.getElementById(id).textContent = value);
+  const results = document.getElementById("amfResultsSection");
+  results.classList.remove("hidden");
+  results.scrollIntoView({ behavior: "smooth", block: "start" });
+});
+document.getElementById("clearAmfBtn").addEventListener("click", () => {
+  amfForm.reset();
+  Object.keys(amfFields).forEach(name => {
+    const errorId = name === "frequencyOne" || name === "frequencyTwo" ? `${name}Error` : `amf${name[0].toUpperCase()}${name.slice(1)}Error`;
+    const error = document.getElementById(errorId);
+    if (error) error.textContent = "";
+  });
+  document.getElementById("amfResultsSection").classList.add("hidden");
 });

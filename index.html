@@ -236,29 +236,57 @@
     <section class="amf-section" id="amfSection">
       <div class="section-header">
         <div>
-          <span class="section-kicker">05 · Cálculo auxiliar</span>
-          <h2>Frecuencia de amplitud modulada (AMF)</h2>
-          <p>Calcula la diferencia absoluta entre dos frecuencias de corriente media.</p>
+          <span class="section-kicker">05 · Dosificación + AMF</span>
+          <h2>Información del paciente y frecuencia de amplitud modulada</h2>
+          <p>Este formulario repite los datos del paciente y los cálculos de dosificación, e incorpora las dos frecuencias para calcular la AMF.</p>
         </div>
       </div>
       <div class="panel amf-panel">
-        <div class="form-grid">
-          <label class="field" for="frequencyOne">
-            <span>Primera frecuencia (f₁)</span><span class="field-hint">Hz</span>
-            <input id="frequencyOne" type="number" min="0" step="any" placeholder="Ej. 4000">
-          </label>
-          <label class="field" for="frequencyTwo">
-            <span>Segunda frecuencia (f₂)</span><span class="field-hint">Hz</span>
-            <input id="frequencyTwo" type="number" min="0" step="any" placeholder="Ej. 4100">
-          </label>
+        <div class="panel-heading">
+          <div><span class="section-kicker">Datos para este cálculo</span><h2>Información del paciente</h2></div>
         </div>
-        <div class="form-actions">
-          <button class="btn btn-primary" type="button" id="calculateAmfBtn">Calcular AMF</button>
-          <button class="btn btn-secondary" type="button" id="clearAmfBtn">Limpiar</button>
-        </div>
-        <div id="amfResult" class="amf-result hidden" aria-live="polite"></div>
-        <p class="formula-explanation"><strong>Fórmula:</strong> AMF = |f₁ − f₂|. Ejemplo: |4100 − 4000| = 100 Hz.</p>
+        <form id="amfCalculatorForm" novalidate>
+          <div class="form-grid">
+            <label class="field"><span>Edad</span><span class="field-hint">Años</span><input id="amfAge" type="number" min="0" max="120" step="1" placeholder="Ej. 22" required><small class="error" id="amfAgeError"></small></label>
+            <label class="field"><span>Sexo</span><span class="field-hint">M / F</span><select id="amfSex" required><option value="">Seleccionar</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select><small class="error" id="amfSexError"></small></label>
+            <label class="field"><span>Peso</span><span class="field-hint">Kilogramos</span><input id="amfWeight" type="number" min="1" max="500" step="0.1" placeholder="Ej. 48" required><small class="error" id="amfWeightError"></small></label>
+            <label class="field"><span>Estatura</span><span class="field-hint">Metros</span><input id="amfHeight" type="number" min="0.5" max="2.5" step="0.01" placeholder="Ej. 1.50" required><small class="error" id="amfHeightError"></small></label>
+          </div>
+          <div class="form-grid patient-notes-grid">
+            <label class="field field-full"><span>Signos observados</span><span class="field-hint">Ej. inflamación visible, enrojecimiento o limitación observable</span><textarea id="amfPatientSigns" rows="3" placeholder="Anota los signos observados (opcional)"></textarea></label>
+            <label class="field field-full"><span>Síntomas referidos</span><span class="field-hint">Ej. dolor, rigidez, hormigueo o debilidad</span><textarea id="amfPatientSymptoms" rows="3" placeholder="Describe los síntomas que refiere la persona (opcional)"></textarea></label>
+            <label class="field field-full"><span>Observaciones adicionales</span><textarea id="amfPatientNotes" rows="2" placeholder="Contexto relevante (opcional)"></textarea></label>
+          </div>
+          <div class="form-grid amf-frequency-grid">
+            <label class="field"><span>Primera frecuencia (f₁)</span><span class="field-hint">Hz</span><input id="frequencyOne" type="number" min="0" step="any" placeholder="Ej. 4000" required><small class="error" id="frequencyOneError"></small></label>
+            <label class="field"><span>Segunda frecuencia (f₂)</span><span class="field-hint">Hz</span><input id="frequencyTwo" type="number" min="0" step="any" placeholder="Ej. 4100" required><small class="error" id="frequencyTwoError"></small></label>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Calcular dosificación y AMF</button>
+            <button class="btn btn-secondary" type="button" id="clearAmfBtn">Limpiar este formulario</button>
+          </div>
+        </form>
+        <div class="note-box"><strong>Importante:</strong><span>Edad y sexo se solicitan como datos del formulario, pero las reglas de dosificación actuales dependen del IMC. La AMF se calcula como la diferencia absoluta entre las dos frecuencias.</span></div>
       </div>
+
+      <section class="results-section hidden" id="amfResultsSection">
+        <div class="section-header"><div><span class="section-kicker">Resultados del cálculo AMF</span><h2>Resultados completos</h2><p>Incluye la dosificación calculada con las mismas reglas del formulario principal y el resultado de AMF.</p></div></div>
+        <div class="results-grid">
+          <article class="result-card"><span class="result-label">IMC</span><strong id="amfResultBmi">—</strong><small>kg/m²</small></article>
+          <article class="result-card"><span class="result-label">Clasificación</span><strong id="amfResultClassification">—</strong></article>
+          <article class="result-card"><span class="result-label">Frecuencia</span><strong id="amfResultFrequency">—</strong><small>Hz</small></article>
+          <article class="result-card"><span class="result-label">Duración del pulso</span><strong id="amfResultPulse">—</strong><small>µs</small></article>
+          <article class="result-card"><span class="result-label">Intensidad</span><strong id="amfResultIntensity">—</strong><small>mA</small></article>
+          <article class="result-card"><span class="result-label">Duración de sesión</span><strong id="amfResultDuration">—</strong><small>minutos</small></article>
+          <article class="result-card"><span class="result-label">Frecuencia de sesiones</span><strong id="amfResultSessions">—</strong><small>sesiones sugeridas</small></article>
+          <article class="result-card"><span class="result-label">M1 · Resultado de intensidad</span><strong id="amfResultM1">—</strong><small>mA</small></article>
+          <article class="result-card"><span class="result-label">Frecuencia 1 (f₁)</span><strong id="amfFrequencyOneResult">—</strong><small>Hz</small></article>
+          <article class="result-card"><span class="result-label">Frecuencia 2 (f₂)</span><strong id="amfFrequencyTwoResult">—</strong><small>Hz</small></article>
+          <article class="result-card"><span class="result-label">AMF</span><strong id="amfValueResult">—</strong><small>Hz · |f₁ − f₂|</small></article>
+        </div>
+        <div class="recommendation-card"><div class="recommendation-icon">i</div><div><span class="result-label">Recomendación del Excel</span><p id="amfRecommendation">—</p></div></div>
+      </section>
+      <p class="formula-explanation"><strong>Fórmula AMF:</strong> AMF = |f₁ − f₂|. Ejemplo: |4100 − 4000| = 100 Hz.</p>
     </section>
 
     <section class="electrodes-section">
