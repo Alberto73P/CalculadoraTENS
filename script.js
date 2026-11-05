@@ -1,213 +1,111 @@
-const form = document.getElementById("calculatorForm");
-const clearBtn = document.getElementById("clearBtn");
-const emptyState = document.getElementById("emptyState");
-const summaryContent = document.getElementById("summaryContent");
-const resultsSection = document.getElementById("resultsSection");
-const statusDot = document.getElementById("statusDot");
-const fields = {
-  age: document.getElementById("age"), sex: document.getElementById("sex"),
-  weight: document.getElementById("weight"), height: document.getElementById("height")
-};
+const $ = (id) => document.getElementById(id);
+const patientForm = $('patientForm');
+const patientFields = { age: $('age'), sex: $('sex'), weight: $('weight'), height: $('height') };
+let patientData = null;
 
-/* REGLAS ORIGINALES DEL EXCEL. Edad y sexo no intervienen en estas fórmulas. */
-function calculateFromExcelRules(weight, height) {
-  const bmi = weight / (height * height);
-  let classification, frequency, pulseDuration, intensity, sessionDuration, sessions, recommendation;
-  if (bmi < 18.5) {
-    classification = "Bajo peso"; frequency = 10; pulseDuration = 150; intensity = 5; sessionDuration = 15; sessions = 2;
-    recommendation = "Aumentar masa muscular y controlar la nutrición.";
-  } else if (bmi < 24.9) {
-    classification = "Normal"; frequency = 20; pulseDuration = 200; intensity = 7; sessionDuration = 20; sessions = 3;
-    recommendation = "Mantener peso saludable con ejercicio y dieta equilibrada.";
-  } else if (bmi < 29.9) {
-    classification = "Sobrepeso"; frequency = 25; pulseDuration = 300; intensity = 10; sessionDuration = 25; sessions = 4;
-    recommendation = "Controlar peso y realizar ejercicio regular.";
-  } else {
-    classification = "Obesidad"; frequency = 30; pulseDuration = 400; intensity = 12; sessionDuration = 30; sessions = 5;
-    recommendation = "Reducir peso, consultar nutricionista y realizar ejercicio.";
-  }
-  return { bmi, classification, frequency, pulseDuration, intensity, sessionDuration, sessions, recommendation, m1: intensity };
-}
-function setError(name, message = "") { const el = document.getElementById(`${name}Error`); if (el) el.textContent = message; }
-function validate() {
-  let valid = true; Object.keys(fields).forEach(name => setError(name));
-  const age = Number(fields.age.value), sex = fields.sex.value, weight = Number(fields.weight.value), height = Number(fields.height.value);
-  if (fields.age.value === "" || !Number.isFinite(age) || age < 0 || age > 120) { setError("age", "Introduce una edad válida."); valid = false; }
-  if (!sex) { setError("sex", "Selecciona una opción."); valid = false; }
-  if (fields.weight.value === "" || !Number.isFinite(weight) || weight <= 0 || weight > 500) { setError("weight", "Introduce un peso válido."); valid = false; }
-  if (fields.height.value === "" || !Number.isFinite(height) || height <= 0 || height > 2.5) { setError("height", "Introduce una estatura válida."); valid = false; }
-  return valid;
-}
-function formatNumber(value, decimals = 1) { return value.toLocaleString("es-MX", { minimumFractionDigits: decimals, maximumFractionDigits: decimals }); }
-function renderResults(result) {
-  document.getElementById("bmiValue").textContent = formatNumber(result.bmi, 2);
-  document.getElementById("classification").textContent = result.classification;
-  document.getElementById("summaryFrequency").textContent = `${result.frequency} Hz`;
-  document.getElementById("summaryIntensity").textContent = `${result.intensity} mA`;
-  document.getElementById("summaryPulse").textContent = `${result.pulseDuration} µs`;
-  document.getElementById("summaryDuration").textContent = `${result.sessionDuration} min`;
-  document.getElementById("summarySessions").textContent = `${result.sessions}`;
-  document.getElementById("resultBmi").textContent = formatNumber(result.bmi, 2);
-  document.getElementById("resultClassification").textContent = result.classification;
-  document.getElementById("resultFrequency").textContent = result.frequency;
-  document.getElementById("resultPulse").textContent = result.pulseDuration;
-  document.getElementById("resultIntensity").textContent = result.intensity;
-  document.getElementById("resultDuration").textContent = result.sessionDuration;
-  document.getElementById("resultSessions").textContent = result.sessions;
-  document.getElementById("resultM1").textContent = result.m1;
-  document.getElementById("recommendation").textContent = result.recommendation;
-  emptyState.classList.add("hidden"); summaryContent.classList.remove("hidden"); resultsSection.classList.remove("hidden"); statusDot.classList.add("active");
-  resultsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-}
-form.addEventListener("submit", event => {
-  event.preventDefault(); if (!validate()) return;
-  renderResults(calculateFromExcelRules(Number(fields.weight.value), Number(fields.height.value)));
-});
-
-/* CATÁLOGO AMPLIABLE. Para agregar una afección, añade una entrada con zona, nombre y síntomas. */
-const conditionCatalog = [
-  { id: "epicondilitis", name: "Epicondilitis", zone: "codo", description: "Coincidencia orientativa de síntomas del codo.", symptoms: [
-    { id: "dolor_codo", label: "Dolor en el codo" }, { id: "dolor_irradiado_codo", label: "El dolor se irradia" },
-    { id: "debilidad_agarre", label: "Debilidad al agarrar objetos" }, { id: "molestia_actividad", label: "Molestias en movimientos cotidianos" },
-    { id: "sensibilidad_tacto", label: "Sensibilidad al tocar la zona" }, { id: "rigidez_manana", label: "Rigidez por la mañana" },
-    { id: "progresivo", label: "Los síntomas han empeorado progresivamente" }
-  ]},
-  { id: "esguince_cervical", name: "Esguince cervical", zone: "cuello", description: "Coincidencia orientativa de síntomas cervicales; requiere valoración profesional.", symptoms: [
-    { id: "dolor_rigidez_cuello", label: "Dolor y rigidez en el cuello" }, { id: "limitacion_cuello", label: "Limitación del movimiento del cuello" },
-    { id: "cefalea", label: "Dolor de cabeza" }, { id: "irradiacion_cuello", label: "Dolor que se irradia" },
-    { id: "fatiga_debilidad", label: "Fatiga o debilidad general" }, { id: "mareos", label: "Mareos o vértigo" },
-    { id: "alteracion_sensorial", label: "Hormigueo u otras alteraciones sensoriales" }, { id: "acufenos_vision", label: "Zumbidos en los oídos o visión borrosa" }
-  ]},
-  { id: "quervain", name: "Tenosinovitis de Quervain", zone: "pulgar", description: "Coincidencia orientativa de síntomas en la base del pulgar y muñeca.", symptoms: [
-    { id: "dolor_base_pulgar", label: "Dolor en la base del pulgar" }, { id: "irradiacion_pulgar", label: "Dolor que se irradia" },
-    { id: "hinchazon_pulgar", label: "Hinchazón o sensibilidad" }, { id: "agarre_pellizco", label: "Dificultad para agarrar o pellizcar" },
-    { id: "bloqueo_chasquido", label: "Sensación de bloqueo o chasquido" }
-  ]},
-  { id: "lumbalgia", name: "Lumbalgia", zone: "espalda", description: "Coincidencia orientativa de síntomas en la espalda baja.", symptoms: [
-    { id: "dolor_espalda_baja", label: "Dolor en la espalda baja" }, { id: "rigidez_bloqueo", label: "Rigidez o sensación de bloqueo" },
-    { id: "limitacion_espalda", label: "Limitación del movimiento" }, { id: "ciatica", label: "Dolor que se irradia hacia una pierna" }
-  ]}
+const excelBands = [
+  { max: 18.5, classification: 'Bajo peso', recommendation: 'Aumentar masa muscular y controlar la nutrición.', tens: { frequency: 10, pulse: 150, intensity: 5, duration: 15, sessions: 2 }, interferential: { frequency: 50, carrier: 1000, duration: 15, sessions: 4 } },
+  { max: 24.9, classification: 'Normal', recommendation: 'Mantener peso saludable con ejercicio y dieta equilibrada.', tens: { frequency: 20, pulse: 200, intensity: 7, duration: 20, sessions: 3 }, interferential: { frequency: 100, carrier: 4000, duration: 20, sessions: 5 } },
+  { max: 29.9, classification: 'Sobrepeso', recommendation: 'Controlar peso y realizar ejercicio regular.', tens: { frequency: 25, pulse: 300, intensity: 10, duration: 25, sessions: 4 }, interferential: { frequency: 150, carrier: 4500, duration: 25, sessions: 6 } },
+  { max: Infinity, classification: 'Obesidad', recommendation: 'Reducir peso, consultar nutricionista y realizar ejercicio.', tens: { frequency: 30, pulse: 400, intensity: 12, duration: 30, sessions: 5 }, interferential: { frequency: null, carrier: 8000, duration: 30, sessions: 7 } }
 ];
-const bodyZone = document.getElementById("bodyZone");
-const guidedQuestions = document.getElementById("guidedQuestions");
-const diagnosisResults = document.getElementById("diagnosisResults");
-function renderQuestions() {
-  const zone = bodyZone.value; diagnosisResults.classList.add("hidden"); diagnosisResults.replaceChildren();
-  if (!zone) { guidedQuestions.classList.add("hidden"); guidedQuestions.replaceChildren(); return; }
-  const relevant = conditionCatalog.filter(condition => condition.zone === zone);
-  const uniqueSymptoms = [...new Map(relevant.flatMap(condition => condition.symptoms).map(symptom => [symptom.id, symptom])).values()];
-  guidedQuestions.classList.remove("hidden");
-  guidedQuestions.innerHTML = `<h3>Preguntas sobre los síntomas</h3><p>Marca todos los síntomas que correspondan. Puedes seleccionar más de uno.</p><div class="symptom-grid" id="symptomGrid"></div>`;
-  const grid = guidedQuestions.querySelector("#symptomGrid");
-  uniqueSymptoms.forEach(symptom => {
-    const label = document.createElement("label"); label.className = "symptom-option";
-    const input = document.createElement("input"); input.type = "checkbox"; input.name = "guidedSymptom"; input.value = symptom.id;
-    const text = document.createElement("span"); text.textContent = symptom.label;
-    label.append(input, text); grid.append(label);
-  });
-}
-bodyZone.addEventListener("change", renderQuestions);
-function compareSymptoms() {
-  const zone = bodyZone.value;
-  if (!zone) { diagnosisResults.classList.remove("hidden"); diagnosisResults.textContent = "Selecciona primero una zona corporal."; return; }
-  const selected = new Set([...guidedQuestions.querySelectorAll('input[name="guidedSymptom"]:checked')].map(input => input.value));
-  if (!selected.size) { diagnosisResults.classList.remove("hidden"); diagnosisResults.textContent = "Selecciona al menos un síntoma para realizar la comparación."; return; }
-  const matches = conditionCatalog.filter(condition => condition.zone === zone).map(condition => {
-    const matched = condition.symptoms.filter(symptom => selected.has(symptom.id));
-    return { ...condition, matched, total: condition.symptoms.length, percent: Math.round(matched.length / condition.symptoms.length * 100) };
-  }).filter(condition => condition.matched.length > 0).sort((a, b) => b.matched.length - a.matched.length);
-  diagnosisResults.replaceChildren(); diagnosisResults.classList.remove("hidden");
-  const heading = document.createElement("h3"); heading.textContent = "Coincidencias encontradas"; diagnosisResults.append(heading);
-  const intro = document.createElement("p"); intro.className = "formula-explanation"; intro.textContent = "El orden solo refleja coincidencias con el catálogo, no la probabilidad de tener una enfermedad."; diagnosisResults.append(intro);
-  if (!matches.length) { const p = document.createElement("p"); p.textContent = "No se encontraron coincidencias en el catálogo actual. Esto no descarta ninguna afección."; diagnosisResults.append(p); return; }
-  matches.forEach(match => {
-    const card = document.createElement("article"); card.className = "result-match";
-    const head = document.createElement("div"); head.className = "result-match-head";
-    const name = document.createElement("strong"); name.textContent = match.name;
-    const score = document.createElement("span"); score.className = "match-score"; score.textContent = `${match.matched.length} de ${match.total} síntomas del catálogo`;
-    head.append(name, score); card.append(head);
-    const p = document.createElement("p"); p.textContent = `Coincidencias: ${match.matched.map(item => item.label).join(", ")}. ${match.description}`; card.append(p); diagnosisResults.append(card);
-  });
-}
-document.getElementById("compareSymptomsBtn").addEventListener("click", compareSymptoms);
-document.getElementById("clearDiagnosisBtn").addEventListener("click", () => { bodyZone.value = ""; renderQuestions(); });
 
-/* Nuevo registro: limpiar datos y resultados de esta sesión, sin persistencia. */
-clearBtn.addEventListener("click", () => {
-  form.reset(); Object.keys(fields).forEach(name => setError(name));
-  emptyState.classList.remove("hidden"); summaryContent.classList.add("hidden"); resultsSection.classList.add("hidden"); statusDot.classList.remove("active");
-  bodyZone.value = ""; renderQuestions();
-  if (typeof amfForm !== "undefined") { amfForm.reset(); document.getElementById("amfResultsSection").classList.add("hidden"); Object.keys(amfFields).forEach(name => { const errorId = name === "frequencyOne" || name === "frequencyTwo" ? `${name}Error` : `amf${name[0].toUpperCase()}${name.slice(1)}Error`; const error = document.getElementById(errorId); if (error) error.textContent = ""; }); }
-  document.getElementById("patientSigns").value = ""; document.getElementById("patientSymptoms").value = ""; document.getElementById("patientNotes").value = "";
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
-
-/* Formulario independiente: misma dosificación del Excel + cálculo AMF. */
-const amfForm = document.getElementById("amfCalculatorForm");
-const amfFields = {
-  age: document.getElementById("amfAge"),
-  sex: document.getElementById("amfSex"),
-  weight: document.getElementById("amfWeight"),
-  height: document.getElementById("amfHeight"),
-  frequencyOne: document.getElementById("frequencyOne"),
-  frequencyTwo: document.getElementById("frequencyTwo")
-};
-function validateAmfForm() {
+function setError(id, message = '') { $(id).textContent = message; }
+function format(value, decimals = 2) { return Number(value).toLocaleString('es-MX', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }); }
+function validatePatient() {
   let valid = true;
-  Object.keys(amfFields).forEach(name => {
-    const error = document.getElementById(`${name === "frequencyOne" || name === "frequencyTwo" ? name : "amf" + name[0].toUpperCase() + name.slice(1)}Error`);
-    if (error) error.textContent = "";
-  });
-  const rules = [
-    ["age", amfFields.age.value !== "" && Number(amfFields.age.value) >= 0 && Number(amfFields.age.value) <= 120, "Introduce una edad válida."],
-    ["sex", Boolean(amfFields.sex.value), "Selecciona una opción."],
-    ["weight", amfFields.weight.value !== "" && Number(amfFields.weight.value) > 0 && Number(amfFields.weight.value) <= 500, "Introduce un peso válido."],
-    ["height", amfFields.height.value !== "" && Number(amfFields.height.value) >= 0.5 && Number(amfFields.height.value) <= 2.5, "Introduce una estatura válida."],
-    ["frequencyOne", amfFields.frequencyOne.value !== "" && Number.isFinite(Number(amfFields.frequencyOne.value)) && Number(amfFields.frequencyOne.value) >= 0, "Introduce una frecuencia válida (0 o mayor)."],
-    ["frequencyTwo", amfFields.frequencyTwo.value !== "" && Number.isFinite(Number(amfFields.frequencyTwo.value)) && Number(amfFields.frequencyTwo.value) >= 0, "Introduce una frecuencia válida (0 o mayor)."]
-  ];
-  rules.forEach(([name, okay, message]) => {
-    if (!okay) {
-      valid = false;
-      const errorId = name === "frequencyOne" || name === "frequencyTwo" ? `${name}Error` : `amf${name[0].toUpperCase()}${name.slice(1)}Error`;
-      const error = document.getElementById(errorId);
-      if (error) error.textContent = message;
-    }
-  });
+  const age = Number(patientFields.age.value), weight = Number(patientFields.weight.value), height = Number(patientFields.height.value);
+  ['ageError','sexError','weightError','heightError'].forEach(id => setError(id));
+  if (patientFields.age.value === '' || !Number.isInteger(age) || age < 0 || age > 120) { setError('ageError', 'Introduce una edad válida.'); valid = false; }
+  if (!patientFields.sex.value) { setError('sexError', 'Selecciona una opción.'); valid = false; }
+  if (patientFields.weight.value === '' || !Number.isFinite(weight) || weight <= 0 || weight > 500) { setError('weightError', 'Introduce un peso válido.'); valid = false; }
+  if (patientFields.height.value === '' || !Number.isFinite(height) || height < 0.5 || height > 2.5) { setError('heightError', 'Introduce una estatura válida.'); valid = false; }
   return valid;
 }
-amfForm.addEventListener("submit", event => {
-  event.preventDefault();
-  if (!validateAmfForm()) return;
-  const result = calculateFromExcelRules(Number(amfFields.weight.value), Number(amfFields.height.value));
-  const f1 = Number(amfFields.frequencyOne.value);
-  const f2 = Number(amfFields.frequencyTwo.value);
-  const amf = Math.abs(f1 - f2);
-  const values = {
-    amfResultBmi: formatNumber(result.bmi, 2),
-    amfResultClassification: result.classification,
-    amfResultFrequency: result.frequency,
-    amfResultPulse: result.pulseDuration,
-    amfResultIntensity: result.intensity,
-    amfResultDuration: result.sessionDuration,
-    amfResultSessions: result.sessions,
-    amfResultM1: result.m1,
-    amfFrequencyOneResult: `${formatNumber(f1, 4)} Hz`,
-    amfFrequencyTwoResult: `${formatNumber(f2, 4)} Hz`,
-    amfValueResult: `${formatNumber(amf, 4)} Hz`,
-    amfRecommendation: result.recommendation
-  };
-  Object.entries(values).forEach(([id, value]) => document.getElementById(id).textContent = value);
-  const results = document.getElementById("amfResultsSection");
-  results.classList.remove("hidden");
-  results.scrollIntoView({ behavior: "smooth", block: "start" });
+function calculatePatient() {
+  const age = Number(patientFields.age.value), weight = Number(patientFields.weight.value), height = Number(patientFields.height.value);
+  const bmi = weight / (height * height);
+  const band = excelBands.find(item => bmi < item.max);
+  patientData = { age, sex: patientFields.sex.value, weight, height, bmi, ...band };
+  $('emptyState').classList.add('hidden'); $('summaryContent').classList.remove('hidden'); $('statusDot').classList.add('active');
+  $('bmiValue').textContent = format(bmi); $('classification').textContent = band.classification;
+  $('summaryAge').textContent = `${age} años`; $('summarySex').textContent = patientData.sex === 'femenino' ? 'Femenino' : 'Masculino';
+  $('summaryWeight').textContent = `${format(weight, 1)} kg`; $('summaryHeight').textContent = `${format(height, 2)} m`;
+}
+function ensurePatient() {
+  if (!validatePatient()) { $('patientSection').scrollIntoView({ behavior: 'smooth', block: 'start' }); return false; }
+  calculatePatient();
+  return true;
+}
+function setText(id, value) { $(id).textContent = value; }
+function calculateTens() {
+  if (!ensurePatient()) return;
+  const { bmi, classification, recommendation, tens } = patientData;
+  setText('tensBmi', format(bmi)); setText('tensClass', classification); setText('tensFrequency', tens.frequency);
+  setText('tensPulse', tens.pulse); setText('tensIntensity', tens.intensity); setText('tensDuration', tens.duration);
+  setText('tensSessions', tens.sessions); setText('tensM1', tens.intensity); setText('tensRecommendation', recommendation);
+  $('tensEmpty').classList.add('hidden'); $('tensResults').classList.remove('hidden');
+}
+function calculateInterferential(event) {
+  if (event) event.preventDefault();
+  setError('interferentialIntensityError');
+  if (!ensurePatient()) return;
+  const raw = $('interferentialIntensity').value, intensity = Number(raw);
+  if (raw === '' || !Number.isFinite(intensity) || intensity <= 0 || intensity > 100) {
+    setError('interferentialIntensityError', 'Introduce una intensidad válida mayor que 0 y hasta 100 mA.'); return;
+  }
+  const { bmi, classification, recommendation, interferential } = patientData;
+  setText('ifBmi', format(bmi)); setText('ifClass', classification);
+  setText('ifFrequency', interferential.frequency === null ? 'No especificada' : interferential.frequency);
+  setText('ifCarrier', interferential.carrier); setText('ifIntensity', `${format(intensity, 1)}`);
+  setText('ifDuration', interferential.duration); setText('ifSessions', interferential.sessions); setText('ifM1', format(intensity, 1));
+  setText('ifRecommendation', recommendation);
+  $('ifFrequencyNote').textContent = interferential.frequency === null
+    ? 'La fórmula de corriente interferencial del Excel no especifica una frecuencia para la categoría de obesidad. No se asignó un valor alternativo.'
+    : 'Frecuencia y frecuencia portadora reproducidas de la fórmula de corriente interferencial del Excel.';
+  $('interferentialEmpty').classList.add('hidden'); $('interferentialResults').classList.remove('hidden');
+}
+patientForm.addEventListener('submit', event => { event.preventDefault(); if (!validatePatient()) return; calculatePatient(); calculateTens(); calculateInterferential(); $('tensSection').scrollIntoView({ behavior: 'smooth', block: 'start' }); });
+$('calculateTensBtn').addEventListener('click', calculateTens);
+$('interferentialForm').addEventListener('submit', calculateInterferential);
+$('clearInterferentialBtn').addEventListener('click', () => { $('interferentialIntensity').value = ''; setError('interferentialIntensityError'); $('interferentialResults').classList.add('hidden'); $('interferentialEmpty').classList.remove('hidden'); });
+$('clearBtn').addEventListener('click', () => {
+  patientForm.reset(); $('interferentialForm').reset(); patientData = null;
+  ['ageError','sexError','weightError','heightError','interferentialIntensityError'].forEach(id => setError(id));
+  $('emptyState').classList.remove('hidden'); $('summaryContent').classList.add('hidden'); $('statusDot').classList.remove('active');
+  $('tensResults').classList.add('hidden'); $('tensEmpty').classList.remove('hidden');
+  $('interferentialResults').classList.add('hidden'); $('interferentialEmpty').classList.remove('hidden');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
-document.getElementById("clearAmfBtn").addEventListener("click", () => {
-  amfForm.reset();
-  Object.keys(amfFields).forEach(name => {
-    const errorId = name === "frequencyOne" || name === "frequencyTwo" ? `${name}Error` : `amf${name[0].toUpperCase()}${name.slice(1)}Error`;
-    const error = document.getElementById(errorId);
-    if (error) error.textContent = "";
-  });
-  document.getElementById("amfResultsSection").classList.add("hidden");
+
+// Catálogo orientativo de síntomas conservado del proyecto anterior.
+const conditionCatalog = [
+  { name: 'Epicondilitis', zone: 'codo', description: 'Coincidencia orientativa de síntomas del codo.', symptoms: ['Dolor en el codo','El dolor se irradia','Debilidad al agarrar objetos','Molestias en movimientos cotidianos','Sensibilidad al tocar la zona','Rigidez por la mañana','Los síntomas han empeorado progresivamente'] },
+  { name: 'Esguince cervical', zone: 'cuello', description: 'Coincidencia orientativa de síntomas cervicales; requiere valoración profesional.', symptoms: ['Dolor y rigidez en el cuello','Limitación del movimiento del cuello','Dolor de cabeza','Dolor que se irradia','Fatiga o debilidad general','Mareos o vértigo','Hormigueo u otras alteraciones sensoriales','Zumbidos en los oídos o visión borrosa'] },
+  { name: 'Tenosinovitis de Quervain', zone: 'pulgar', description: 'Coincidencia orientativa de síntomas en la base del pulgar y muñeca.', symptoms: ['Dolor en la base del pulgar','Dolor que se irradia','Hinchazón o sensibilidad','Dificultad para agarrar o pellizcar','Sensación de bloqueo o chasquido'] },
+  { name: 'Lumbalgia', zone: 'espalda', description: 'Coincidencia orientativa de síntomas en la espalda baja.', symptoms: ['Dolor en la espalda baja','Rigidez o sensación de bloqueo','Limitación del movimiento','Dolor que se irradia hacia una pierna'] }
+];
+const zone = $('bodyZone'), questions = $('guidedQuestions'), diagnosis = $('diagnosisResults');
+zone.addEventListener('change', () => {
+  diagnosis.classList.add('hidden'); diagnosis.replaceChildren(); questions.replaceChildren();
+  const condition = conditionCatalog.find(item => item.zone === zone.value);
+  if (!condition) { questions.classList.add('hidden'); return; }
+  const title = document.createElement('h3'); title.textContent = 'Preguntas sobre los síntomas'; questions.append(title);
+  const desc = document.createElement('p'); desc.textContent = 'Marca todos los síntomas que correspondan.'; questions.append(desc);
+  const grid = document.createElement('div'); grid.className = 'symptom-grid';
+  condition.symptoms.forEach((symptom, index) => { const label = document.createElement('label'); label.className = 'symptom-option'; const input = document.createElement('input'); input.type = 'checkbox'; input.value = String(index); const text = document.createElement('span'); text.textContent = symptom; label.append(input, text); grid.append(label); });
+  questions.append(grid); questions.classList.remove('hidden');
 });
+$('compareSymptomsBtn').addEventListener('click', () => {
+  diagnosis.replaceChildren(); diagnosis.classList.remove('hidden');
+  const condition = conditionCatalog.find(item => item.zone === zone.value);
+  if (!condition) { diagnosis.textContent = 'Selecciona primero una zona corporal.'; return; }
+  const selected = [...questions.querySelectorAll('input:checked')].map(input => condition.symptoms[Number(input.value)]);
+  if (!selected.length) { diagnosis.textContent = 'Selecciona al menos un síntoma.'; return; }
+  const heading = document.createElement('h3'); heading.textContent = 'Coincidencia en el catálogo'; diagnosis.append(heading);
+  const result = document.createElement('article'); result.className = 'result-match';
+  const name = document.createElement('strong'); name.textContent = `${condition.name} · ${selected.length} de ${condition.symptoms.length} síntomas`; result.append(name);
+  const p = document.createElement('p'); p.textContent = `Coincidencias: ${selected.join(', ')}. ${condition.description}`; result.append(p); diagnosis.append(result);
+  const note = document.createElement('p'); note.className = 'formula-explanation'; note.textContent = 'Esta comparación no confirma un diagnóstico ni descarta otras causas.'; diagnosis.append(note);
+});
+$('clearDiagnosisBtn').addEventListener('click', () => { zone.value = ''; questions.replaceChildren(); questions.classList.add('hidden'); diagnosis.replaceChildren(); diagnosis.classList.add('hidden'); });
