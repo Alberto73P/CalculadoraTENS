@@ -1,108 +1,304 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Herramienta de apoyo para calcular parámetros de corrientes TENS e interferenciales.">
+  <meta name="description"
+    content="Herramienta de apoyo para calcular parámetros de corrientes TENS e interferenciales.">
   <title>Electroterapia | Dosificación TENS e interferencial</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
   <header class="site-header">
     <div class="container header-inner">
-      <div><span class="eyebrow">Herramienta de apoyo · Fisioterapia</span><h1>Dosificación de electroterapia</h1><p class="header-subtitle">Corrientes TENS e interferenciales</p></div>
+      <div><span class="eyebrow">Herramienta de apoyo · Fisioterapia</span>
+        <h1>Dosificación de electroterapia</h1>
+        <p class="header-subtitle">Corrientes TENS e interferenciales</p>
+      </div>
       <div class="brand-mark" aria-hidden="true">eTENS</div>
     </div>
   </header>
   <main class="container main-content">
     <section class="intro-card">
-      <div><span class="section-kicker">Plataforma de apoyo terapéutico</span><h2>Evaluación y parámetros de dosificación</h2><p>Registra la información del paciente y calcula los parámetros de las dos modalidades de corriente. Los cálculos se realizan localmente en el navegador; los datos no se almacenan.</p></div>
+      <div><span class="section-kicker">Plataforma de apoyo terapéutico</span>
+        <h2>Evaluación y parámetros de dosificación</h2>
+        <p>Registra la información del paciente y calcula los parámetros de las dos modalidades de corriente. Los
+          cálculos se realizan localmente en el navegador; los datos no se almacenan.</p>
+      </div>
       <div class="formula-chip">IMC = peso / estatura²</div>
     </section>
 
     <section class="calculator-grid" id="patientSection">
       <div class="panel form-panel">
-        <div class="panel-heading"><div><span class="section-kicker">01 · Registro</span><h2>Información del paciente</h2></div></div>
+        <div class="panel-heading">
+          <div><span class="section-kicker">01 · Registro</span>
+            <h2>Información del paciente</h2>
+          </div>
+        </div>
         <form id="patientForm" novalidate>
           <div class="form-grid">
-            <label class="field"><span>Edad</span><span class="field-hint">Años</span><input id="age" type="number" min="0" max="120" step="1" placeholder="Ej. 22" required><small class="error" id="ageError"></small></label>
-            <label class="field"><span>Sexo</span><span class="field-hint">M / F</span><select id="sex" required><option value="">Seleccionar</option><option value="femenino">Femenino</option><option value="masculino">Masculino</option></select><small class="error" id="sexError"></small></label>
-            <label class="field"><span>Peso</span><span class="field-hint">Kilogramos</span><input id="weight" type="number" min="1" max="500" step="0.1" placeholder="Ej. 68" required><small class="error" id="weightError"></small></label>
-            <label class="field"><span>Estatura</span><span class="field-hint">Metros</span><input id="height" type="number" min="0.5" max="2.5" step="0.01" placeholder="Ej. 1.70" required><small class="error" id="heightError"></small></label>
+            <label class="field"><span>Edad</span><span class="field-hint">Años</span><input id="age" type="number"
+                min="0" max="120" step="1" placeholder="Ej. 22" required><small class="error"
+                id="ageError"></small></label>
+            <label class="field"><span>Sexo</span><span class="field-hint">M / F</span><select id="sex" required>
+                <option value="">Seleccionar</option>
+                <option value="femenino">Femenino</option>
+                <option value="masculino">Masculino</option>
+              </select><small class="error" id="sexError"></small></label>
+            <label class="field"><span>Peso</span><span class="field-hint">Kilogramos</span><input id="weight"
+                type="number" min="1" max="500" step="0.1" placeholder="Ej. 68" required><small class="error"
+                id="weightError"></small></label>
+            <label class="field"><span>Estatura</span><span class="field-hint">Metros</span><input id="height"
+                type="number" min="0.5" max="2.5" step="0.01" placeholder="Ej. 1.70" required><small class="error"
+                id="heightError"></small></label>
           </div>
           <div class="form-grid patient-notes-grid">
-            <label class="field field-full"><span>Signos observados</span><span class="field-hint">Ej. inflamación visible, enrojecimiento o limitación observable</span><textarea id="patientSigns" rows="2" placeholder="Anota los signos observados (opcional)"></textarea></label>
-            <label class="field field-full"><span>Síntomas referidos</span><span class="field-hint">Ej. dolor, rigidez, hormigueo o debilidad</span><textarea id="patientSymptoms" rows="2" placeholder="Describe los síntomas (opcional)"></textarea></label>
-            <label class="field field-full"><span>Observaciones adicionales</span><textarea id="patientNotes" rows="2" placeholder="Contexto relevante (opcional)"></textarea></label>
+            <label class="field field-full"><span>Signos observados</span><span class="field-hint">Ej. inflamación
+                visible, enrojecimiento o limitación observable</span><textarea id="patientSigns" rows="2"
+                placeholder="Anota los signos observados (opcional)"></textarea></label>
+            <label class="field field-full"><span>Síntomas referidos</span><span class="field-hint">Ej. dolor, rigidez,
+                hormigueo o debilidad</span><textarea id="patientSymptoms" rows="2"
+                placeholder="Describe los síntomas (opcional)"></textarea></label>
+            <label class="field field-full"><span>Observaciones adicionales</span><textarea id="patientNotes" rows="2"
+                placeholder="Contexto relevante (opcional)"></textarea></label>
           </div>
-          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular ambas modalidades</button><button class="btn btn-secondary" type="button" id="clearBtn">Nuevo registro / Limpiar</button></div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular ambas
+              modalidades</button><button class="btn btn-secondary" type="button" id="clearBtn">Nuevo registro /
+              Limpiar</button></div>
         </form>
-        <div class="note-box"><strong>Nota:</strong><span>Edad y sexo se registran como datos generales. Las fórmulas del Excel determinan los parámetros principalmente a partir del IMC.</span></div>
+        <div class="note-box"><strong>Nota:</strong><span>Edad y sexo se registran como datos generales. Las fórmulas
+            del Excel determinan los parámetros principalmente a partir del IMC.</span></div>
       </div>
       <aside class="panel summary-panel">
-        <div class="panel-heading"><div><span class="section-kicker">02 · Datos calculados</span><h2>Resumen del paciente</h2></div><span class="status-dot" id="statusDot"></span></div>
-        <div class="empty-state" id="emptyState"><div class="empty-icon">+</div><h3>Esperando información</h3><p>Completa los datos del paciente para calcular las modalidades.</p></div>
-        <div class="summary-content hidden" id="summaryContent"><div class="bmi-card"><span>Índice de masa corporal</span><strong id="bmiValue">—</strong><span class="classification" id="classification">—</span></div><div class="summary-list"><div><span>Edad</span><strong id="summaryAge">—</strong></div><div><span>Sexo</span><strong id="summarySex">—</strong></div><div><span>Peso</span><strong id="summaryWeight">—</strong></div><div><span>Estatura</span><strong id="summaryHeight">—</strong></div></div></div>
+        <div class="panel-heading">
+          <div><span class="section-kicker">02 · Datos calculados</span>
+            <h2>Resumen del paciente</h2>
+          </div><span class="status-dot" id="statusDot"></span>
+        </div>
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">+</div>
+          <h3>Esperando información</h3>
+          <p>Completa los datos del paciente para calcular las modalidades.</p>
+        </div>
+        <div class="summary-content hidden" id="summaryContent">
+          <div class="bmi-card"><span>Índice de masa corporal</span><strong id="bmiValue">—</strong><span
+              class="classification" id="classification">—</span></div>
+          <div class="summary-list">
+            <div><span>Edad</span><strong id="summaryAge">—</strong></div>
+            <div><span>Sexo</span><strong id="summarySex">—</strong></div>
+            <div><span>Peso</span><strong id="summaryWeight">—</strong></div>
+            <div><span>Estatura</span><strong id="summaryHeight">—</strong></div>
+          </div>
+        </div>
       </aside>
     </section>
 
     <section class="modality-section" id="tensSection">
-      <div class="section-header"><div><span class="section-kicker">03 · Modalidad 01</span><h2>Corriente TENS</h2><p>Parámetros calculados de acuerdo con los rangos de IMC definidos en el Excel.</p></div><span class="modality-icon" aria-hidden="true">TENS</span></div>
+      <div class="section-header">
+        <div><span class="section-kicker">03 · Modalidad 01</span>
+          <h2>Corriente TENS</h2>
+          <p>Parámetros calculados de acuerdo con los rangos de IMC definidos en el Excel.</p>
+        </div><span class="modality-icon" aria-hidden="true">TENS</span>
+      </div>
       <div class="panel modality-panel">
-        <div class="modality-intro"><div><h3>Dosificación TENS</h3><p>La intensidad y los demás parámetros se obtienen de la clasificación de IMC.</p></div><button class="btn btn-primary" type="button" id="calculateTensBtn">Calcular TENS</button></div>
+        <div class="modality-intro">
+          <div>
+            <h3>Dosificación TENS</h3>
+            <p>La intensidad y los demás parámetros se obtienen de la clasificación de IMC.</p>
+          </div><button class="btn btn-primary" type="button" id="calculateTensBtn">Calcular TENS</button>
+        </div>
         <div class="empty-inline" id="tensEmpty">Completa la información del paciente y calcula esta modalidad.</div>
-        <div class="hidden" id="tensResults"><div class="results-grid">
-          <article class="result-card"><span class="result-label">E1 · IMC</span><strong id="tensBmi">—</strong><small>kg/m²</small></article>
-          <article class="result-card"><span class="result-label">Clasificación</span><strong id="tensClass">—</strong></article>
-          <article class="result-card"><span class="result-label">Frecuencia</span><strong id="tensFrequency">—</strong><small>Hz</small></article>
-          <article class="result-card"><span class="result-label">Duración del pulso</span><strong id="tensPulse">—</strong><small>µs</small></article>
-          <article class="result-card"><span class="result-label">Intensidad</span><strong id="tensIntensity">—</strong><small>mA</small></article>
-          <article class="result-card"><span class="result-label">Duración de sesión</span><strong id="tensDuration">—</strong><small>minutos</small></article>
-          <article class="result-card"><span class="result-label">Sesiones sugeridas</span><strong id="tensSessions">—</strong><small>sesiones</small></article>
-          <article class="result-card"><span class="result-label">M1 · Resultado de intensidad</span><strong id="tensM1">—</strong><small>mA</small></article>
-        </div><div class="recommendation-card"><div class="recommendation-icon">i</div><div><span class="result-label">Recomendación del Excel</span><p id="tensRecommendation">—</p></div></div></div>
+        <div class="hidden" id="tensResults">
+          <div class="results-grid">
+            <article class="result-card"><span class="result-label">E1 · IMC</span><strong
+                id="tensBmi">—</strong><small>kg/m²</small></article>
+            <article class="result-card"><span class="result-label">Clasificación</span><strong
+                id="tensClass">—</strong></article>
+            <article class="result-card"><span class="result-label">Frecuencia</span><strong
+                id="tensFrequency">—</strong><small>Hz</small></article>
+            <article class="result-card"><span class="result-label">Duración del pulso</span><strong
+                id="tensPulse">—</strong><small>µs</small></article>
+            <article class="result-card"><span class="result-label">Intensidad</span><strong
+                id="tensIntensity">—</strong><small>mA</small></article>
+            <article class="result-card"><span class="result-label">Duración de sesión</span><strong
+                id="tensDuration">—</strong><small>minutos</small></article>
+            <article class="result-card"><span class="result-label">Sesiones sugeridas</span><strong
+                id="tensSessions">—</strong><small>sesiones</small></article>
+            <article class="result-card"><span class="result-label">M1 · Resultado de intensidad</span><strong
+                id="tensM1">—</strong><small>mA</small></article>
+          </div>
+          <div class="recommendation-card">
+            <div class="recommendation-icon">i</div>
+            <div><span class="result-label">Recomendación del Excel</span>
+              <p id="tensRecommendation">—</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <section class="modality-section" id="interferentialSection">
-      <div class="section-header"><div><span class="section-kicker">04 · Modalidad 02</span><h2>Corriente interferencial</h2><p>Frecuencia, frecuencia portadora y duración de acuerdo con la fórmula del Excel. La intensidad se introduce según la tolerancia del paciente.</p></div><span class="modality-icon interferential-icon" aria-hidden="true">IF</span></div>
+      <div class="section-header">
+        <div><span class="section-kicker">04 · Modalidad 02</span>
+          <h2>Corriente interferencial</h2>
+          <p>Frecuencia, frecuencia portadora y duración de acuerdo con la fórmula del Excel. La intensidad se introduce
+            según la tolerancia del paciente.</p>
+        </div><span class="modality-icon interferential-icon" aria-hidden="true">IF</span>
+      </div>
       <div class="panel modality-panel">
-        <div class="modality-intro"><div><h3>Dosificación interferencial</h3><p>Introduce la intensidad tolerada por el paciente antes de calcular.</p></div></div>
+        <div class="modality-intro">
+          <div>
+            <h3>Dosificación interferencial</h3>
+            <p>Introduce la intensidad tolerada por el paciente antes de calcular.</p>
+          </div>
+        </div>
         <form id="interferentialForm" novalidate>
           <div class="form-grid interferential-input-grid">
-            <label class="field"><span>Intensidad tolerada</span><span class="field-hint">mA · Campo manual</span><input id="interferentialIntensity" type="number" min="0.1" max="100" step="0.1" placeholder="Ej. 8" required><small class="error" id="interferentialIntensityError"></small></label>
+            <label class="field"><span>Intensidad tolerada</span><span class="field-hint">mA · Campo manual</span><input
+                id="interferentialIntensity" type="number" min="0.1" max="100" step="0.1" placeholder="Ej. 8"
+                required><small class="error" id="interferentialIntensityError"></small></label>
           </div>
-          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular interferencial</button><button class="btn btn-secondary" type="button" id="clearInterferentialBtn">Limpiar intensidad</button></div>
+          <div class="form-actions"><button class="btn btn-primary" type="submit">Calcular
+              interferencial</button><button class="btn btn-secondary" type="button" id="clearInterferentialBtn">Limpiar
+              intensidad</button></div>
         </form>
-        <div class="empty-inline" id="interferentialEmpty">Completa la información del paciente y la intensidad tolerada para calcular esta modalidad.</div>
-        <div class="hidden" id="interferentialResults"><div class="results-grid">
-          <article class="result-card"><span class="result-label">E1 · IMC</span><strong id="ifBmi">—</strong><small>kg/m²</small></article>
-          <article class="result-card"><span class="result-label">Clasificación</span><strong id="ifClass">—</strong></article>
-          <article class="result-card"><span class="result-label">Frecuencia</span><strong id="ifFrequency">—</strong><small>Hz</small></article>
-          <article class="result-card"><span class="result-label">Frecuencia portadora</span><strong id="ifCarrier">—</strong><small>Hz</small></article>
-          <article class="result-card"><span class="result-label">Intensidad tolerada</span><strong id="ifIntensity">—</strong><small>mA</small></article>
-          <article class="result-card"><span class="result-label">Duración de sesión</span><strong id="ifDuration">—</strong><small>minutos</small></article>
-          <article class="result-card"><span class="result-label">Sesiones sugeridas</span><strong id="ifSessions">—</strong><small>sesiones</small></article>
-          <article class="result-card"><span class="result-label">M1 · Resultado de intensidad</span><strong id="ifM1">—</strong><small>mA</small></article>
-        </div><div class="recommendation-card"><div class="recommendation-icon">i</div><div><span class="result-label">Recomendación del Excel</span><p id="ifRecommendation">—</p></div></div><p class="formula-explanation" id="ifFrequencyNote"></p></div>
+        <div class="empty-inline" id="interferentialEmpty">Completa la información del paciente y la intensidad tolerada
+          para calcular esta modalidad.</div>
+        <div class="hidden" id="interferentialResults">
+          <div class="results-grid">
+            <article class="result-card"><span class="result-label">E1 · IMC</span><strong
+                id="ifBmi">—</strong><small>kg/m²</small></article>
+            <article class="result-card"><span class="result-label">Clasificación</span><strong id="ifClass">—</strong>
+            </article>
+            <article class="result-card"><span class="result-label">Frecuencia</span><strong
+                id="ifFrequency">—</strong><small>Hz</small></article>
+            <article class="result-card"><span class="result-label">Frecuencia portadora</span><strong
+                id="ifCarrier">—</strong><small>Hz</small></article>
+            <article class="result-card"><span class="result-label">Intensidad tolerada</span><strong
+                id="ifIntensity">—</strong><small>mA</small></article>
+            <article class="result-card"><span class="result-label">Duración de sesión</span><strong
+                id="ifDuration">—</strong><small>minutos</small></article>
+            <article class="result-card"><span class="result-label">Sesiones sugeridas</span><strong
+                id="ifSessions">—</strong><small>sesiones</small></article>
+            <article class="result-card"><span class="result-label">M1 · Resultado de intensidad</span><strong
+                id="ifM1">—</strong><small>mA</small></article>
+          </div>
+          <div class="recommendation-card">
+            <div class="recommendation-icon">i</div>
+            <div><span class="result-label">Recomendación del Excel</span>
+              <p id="ifRecommendation">—</p>
+            </div>
+          </div>
+          <p class="formula-explanation" id="ifFrequencyNote"></p>
+        </div>
       </div>
     </section>
 
     <section class="diagnosis-section" id="symptomGuideSection">
-      <div class="section-header"><div><span class="section-kicker">05 · Orientación complementaria</span><h2>Orientación guiada por síntomas</h2><p>Selecciona una zona corporal y marca los síntomas presentes. Las coincidencias son orientativas y no constituyen un diagnóstico.</p></div></div>
-      <div class="panel diagnosis-panel"><div class="form-grid"><label class="field field-full"><span>¿En qué zona se presentan las molestias?</span><select id="bodyZone"><option value="">Seleccionar zona</option><option value="codo">Codo</option><option value="cuello">Cuello</option><option value="pulgar">Pulgar / muñeca</option><option value="espalda">Espalda baja</option></select></label></div><div id="guidedQuestions" class="guided-questions hidden" aria-live="polite"></div><div class="form-actions"><button class="btn btn-primary" type="button" id="compareSymptomsBtn">Comparar síntomas</button><button class="btn btn-secondary" type="button" id="clearDiagnosisBtn">Limpiar orientación</button></div><div id="diagnosisResults" class="diagnosis-results hidden" aria-live="polite"></div><div class="note-box"><strong>Importante:</strong><span>La coincidencia de síntomas no confirma enfermedades ni sustituye una valoración profesional. El catálogo debe validarse por personal clínico.</span></div></div>
+      <div class="section-header">
+        <div><span class="section-kicker">05 · Orientación complementaria</span>
+          <h2>Orientación guiada por síntomas</h2>
+          <p>Selecciona una zona corporal y marca los síntomas presentes. Las coincidencias son orientativas y no
+            constituyen un diagnóstico.</p>
+        </div>
+      </div>
+      <div class="panel diagnosis-panel">
+        <div class="form-grid"><label class="field field-full"><span>¿En qué zona se presentan las
+              molestias?</span><select id="bodyZone">
+              <option value="">Seleccionar zona</option>
+              <option value="codo">Codo</option>
+              <option value="cuello">Cuello</option>
+              <option value="pulgar">Pulgar / muñeca</option>
+              <option value="espalda">Espalda baja</option>
+            </select></label></div>
+        <div id="guidedQuestions" class="guided-questions hidden" aria-live="polite"></div>
+        <div class="form-actions"><button class="btn btn-primary" type="button" id="compareSymptomsBtn">Comparar
+            síntomas</button><button class="btn btn-secondary" type="button" id="clearDiagnosisBtn">Limpiar
+            orientación</button></div>
+        <div id="diagnosisResults" class="diagnosis-results hidden" aria-live="polite"></div>
+        <div class="note-box"><strong>Importante:</strong><span>La coincidencia de síntomas no confirma enfermedades ni
+            sustituye una valoración profesional. El catálogo debe validarse por personal clínico.</span></div>
+      </div>
     </section>
 
-    <section class="electrodes-section"><div class="section-header"><div><span class="section-kicker">06 · Material visual</span><h2>Colocación y posición de electrodos</h2><p>Espacio reservado para incorporar imágenes de referencia de la aplicación de electrodos.</p></div></div><div class="image-grid"><figure class="image-placeholder"><div class="placeholder-icon">IMG</div><figcaption><strong>Imagen 01</strong><span>Colocación de electrodos</span></figcaption></figure><figure class="image-placeholder"><div class="placeholder-icon">IMG</div><figcaption><strong>Imagen 02</strong><span>Posición / zona de aplicación</span></figcaption></figure><figure class="image-placeholder"><div class="placeholder-icon">IMG</div><figcaption><strong>Imagen 03</strong><span>Referencia adicional</span></figcaption></figure></div></section>
+    <section class="electrodes-section">
+      <div class="section-header">
+        <div><span class="section-kicker">06 · Material visual</span>
+          <h2>Colocación y posición de electrodos</h2>
+          <p>Espacio reservado para incorporar imágenes de referencia de la aplicación de electrodos.</p>
+        </div>
+      </div>
+      <div class="image-grid">
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/tens1.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 01</strong><span>Colocación de electrodos</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/CI2.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 02</strong><span>Posición / zona de aplicación</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/CI3.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 03</strong><span>Referencia adicional</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/CI4.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 02</strong><span>Posición / zona de aplicación</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/CI1.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 03</strong><span>Referencia adicional</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/TENS2.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 02</strong><span>Posición / zona de aplicación</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/TENS3.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 03</strong><span>Referencia adicional</span></figcaption>-->
+        </figure>
+        <figure class="image-placeholder">
+          <div class="placeholder-icon"><img src="assets/images/TENS4.png" alt="" srcset=""></div>
+          <!--<figcaption><strong>Imagen 03</strong><span>Referencia adicional</span></figcaption>-->
+        </figure>
+      </div>
+    </section>
 
-    <section class="instructions-section"><div class="section-header"><div><span class="section-kicker">07 · Instrucciones</span><h2>Uso de la herramienta</h2></div></div><div class="steps"><div class="step"><span>1</span><p>Registra edad y sexo del paciente.</p></div><div class="step"><span>2</span><p>Introduce peso y estatura para calcular el IMC.</p></div><div class="step"><span>3</span><p>Calcula TENS, interferencial o ambas modalidades.</p></div><div class="step"><span>4</span><p>Para interferencial, introduce la intensidad tolerada en mA.</p></div><div class="step"><span>5</span><p>Revisa los resultados y las notas sobre parámetros no especificados.</p></div></div></section>
-
-    <section class="source-note"><strong>Nota sobre las fórmulas</strong><p>Los parámetros reproducen las fórmulas y valores de la hoja de cálculo proporcionada. En corriente interferencial, la fórmula del Excel no define una frecuencia para obesidad; por ello se muestra como no especificada. La frecuencia portadora para esa categoría sí está definida en 8000 Hz. La herramienta es de apoyo y requiere validación por el responsable clínico antes de su uso.</p></section>
+    <section class="instructions-section">
+      <div class="section-header">
+        <div><span class="section-kicker">07 · Instrucciones</span>
+          <h2>Uso de la herramienta</h2>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step"><span>1</span>
+          <p>Registra edad y sexo del paciente.</p>
+        </div>
+        <div class="step"><span>2</span>
+          <p>Introduce peso y estatura para calcular el IMC.</p>
+        </div>
+        <div class="step"><span>3</span>
+          <p>Calcula TENS, interferencial o ambas modalidades.</p>
+        </div>
+        <div class="step"><span>4</span>
+          <p>Para interferencial, introduce la intensidad tolerada en mA.</p>
+        </div>
+        <div class="step"><span>5</span>
+          <p>Revisa los resultados y las notas sobre parámetros no especificados.</p>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer class="site-footer"><div class="container"><span>Dosificación de electroterapia</span><span>Aplicación web estática · HTML + CSS + JavaScript</span></div></footer>
+  <footer class="site-footer">
+    <div class="container"><span>Dosificación de electroterapia</span><span>Aplicación web estática · HTML + CSS +
+        JavaScript</span></div>
+  </footer>
   <script src="script.js"></script>
 </body>
+
 </html>
